@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.LogsDao">
+  <insert id="save"> 
+      insert into logs (opername, opertime,ip, methods, ddesc) value (#{opername},now(),#{ip},#{methods},#{ddesc})
+  </insert>
+  
+  <select id="list" resultType="com.qams.app.bean.Logs">
+    select * from logs
+    <where>
+      <if test="opername!=null and opername!= ''">
+        opername like '%${opername}%'
+      </if>
+    </where>  
+    order by opertime desc
+    limit #{page},#{rows}
+  </select>
+
+  <select id="count" resultType="java.lang.Integer">
+    select count(operid) from logs 
+    <where>
+      <if test="opername!=null and opername!= ''">
+        opername like '%${opername}%'
+      </if>
+    </where>
+  </select>
+
+  <select id="countTimes" resultType="com.qams.app.bean.Logs">
+      select opername ,count(opername) as 'total' from logs where opername is not null group by opername
+  </select>
+
+
+</mapper>

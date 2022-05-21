@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.UsersDao">
+
+  <resultMap id="userMapper" type="com.qams.app.bean.Users">
+    <id property="uid" column="UID" />
+    <result property="uname" column="uname" />
+    <result property="sex" column="SEX" />
+    <result property="password" column="password" />
+    <result property="nickname" column="nickname" />
+    <result property="remark" column="remark" />
+    <result property="avatar" column="avatar" />
+    <result property="ctime" column="ctime" />
+    <result property="mtime" column="mtime" />
+    <result property="stat" column="stat" />
+    <collection property="list" ofType="com.qams.app.bean.Roles">
+      <id property="rid" column="RID" />
+      <result property="rname" column="RNAME" />
+      <result property="rdesc" column="RDESC" />
+    </collection>
+    <collection property="PList" ofType="com.qams.app.bean.Permissions">
+      <id property="pid" column="pid" />
+      <result property="pname" column="pname" />
+      <result property="pdesc" column="pdeesc" />
+    </collection>
+  </resultMap>
+
+  <select id="login" resultMap="userMapper">
+    SELECT * FROM users as u 
+    LEFT JOIN tb_user_role ur ON u.uid = ur.uid
+    LEFT JOIN roles  r ON ur.rid = r.rid 
+    LEFT JOIN tb_role_per rp ON r.rid = rp.rid
+    LEFT JOIN permissions p ON p.pid = rp.pid
+    WHERE u.uname=#{username} and u.del=0  and u.stat=0
+  </select> 
+
+    <select id="list" resultType="com.qams.app.bean.Users">
+    select * from users 
+    <where>
+      <if test="uname!=null and uname!= ''">
+        uname=#{uname}
+      </if>
+      and del =0 
+    </where>  
+  </select>
+
+  <select id="count" resultType="java.lang.Integer">
+    select count(uid) from users 
+    <where>
+      <if test="uname!=null and uname!= ''">
+        uname like '%${uname}%'
+      </if>
+      and del = 0
+    </where>
+  </select>
+
+  <insert id="save">
+      insert into users (uname,nickname,sex,password,avatar,ctime,remark)
+      value (#{uname},#{nickname},#{sex},#{password},#{avatar},now(),#{remark})
+  </insert>
+
+  <update id="remove">
+      update users set del=1 where uid in 
+      <foreach item="item" index="index" collection="list"
+        open="(" separator="," close=")" >
+          #{item}
+      </foreach> 
+  </update>
+
+  <update id="update">
+      update users set 
+      uname=#{uname},
+      nickname=#{nickname},
+      sex=#{sex},
+      password=#{password},
+      avatar=#{avatar},
+      mtime=now(),
+      remark=#{remark},
+      stat=#{stat}
+      where uid=#{uid}
+  </update>
+
+  <!-- get --> 
+
+  <select id="get" resultMap="userMapper">
+    SELECT * FROM users u 
+    LEFT JOIN tb_user_role ur ON u.uid = ur.uid
+    LEFT JOIN roles  r ON ur.rid = r.rid 
+    WHERE u.uid=#{uid} and u.del=0 
+  </select>
+
+  
+  <select id="countSexTimes" resultType="com.qams.app.bean.Users">
+    select  count(sex) as total ,sex from users where sex is not null  group by sex
+  </select>
+
+</mapper>

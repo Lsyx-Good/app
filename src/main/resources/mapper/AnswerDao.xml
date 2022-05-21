@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.AnswerDao">
+
+  <!-- save --> 
+  <insert id="save">
+    insert into answer (uid,content,ctime,qid) 
+    value (#{uid},#{content},now(),#{qid})
+  </insert>
+
+  <!-- list --> 
+
+  <select id="list" resultType="com.qams.app.bean.Answer">
+    select * from answer a left join question q
+    on a.qid = q.qid 
+    left join users u on q.uid=u.uid 
+    <where>
+      <if test="ctime!=null and ctime!=''">
+        a.ctime like '%${ctime}%'
+      </if>
+      and q.uid = #{uid} and a.del = 0
+    </where>
+    limit #{page},#{rows}
+  </select> 
+
+  <!-- count --> 
+
+  <select id="count" resultType="java.lang.Integer">
+    select count(a.aid) from answer a left join question q
+    on a.aid=q.qid 
+    left join users u on q.uid=u.uid
+    <where>
+      <if test="ctime != null and ctime != ''">
+        a.ctime like '%${ctime}%'
+      </if>
+      and q.uid=#{uid} and a.del=0
+    </where>
+  </select>
+
+  <!-- remove --> 
+
+  <update id="remove">
+    update answer set del=1 where aid=#{aid}
+  </update>
+
+  
+</mapper>

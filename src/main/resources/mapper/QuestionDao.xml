@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.QuestionDao">
+  <select id="list" resultType="com.qams.app.bean.Question">
+    SELECT * FROM question q 
+    LEFT JOIN users u ON q.uid=u.uid
+    LEFT JOIN tags t ON q.tid= t.tid
+    LEFT JOIN answer a ON q.qid=a.aid
+    <where>
+      <if test="title!=null and title!= ''">
+        q.title like '%${title}%'
+      </if>
+      <if test="uname!=null and uname!= ''">
+        and u.uname=#{uname}
+      </if>
+      and q.del=0
+    </where>
+    limit #{page}, #{rows}
+  </select>
+
+  <select id="count" resultType="java.lang.Integer">
+    SELECT count(q.qid) FROM question q 
+    LEFT JOIN users u ON q.uid=u.uid
+    LEFT JOIN tags t ON q.tid= t.tid
+    LEFT JOIN answer a ON q.qid=a.aid
+    <where>
+      <if test="title!=null and title!= ''">
+        q.title like '%${title}%'
+      </if>
+      <if test="uname!=null and uname!= ''">
+        and u.uname=#{uname}
+      </if>
+      and q.del=0
+    </where>
+  </select>
+
+  <insert id="save">
+    insert into question(uid, tid,title,content,ctime) value (#{uid},#{tid},#{title},#{content},now()) 
+  </insert>
+
+  <update id="remove">
+    update question set del=1 where qid in 
+      <foreach item="item" index="index" collection="list"
+        open="(" separator="," close=")" >
+          #{item}
+      </foreach>
+  </update>
+
+  <!-- update --> 
+<update id="update">
+ update question set title=#{title}, content=#{content},tid=#{tid},mtime=now()
+ where qid=#{qid}
+</update>
+<!-- Ctrl + i  -->
+  <select id="countHotTitle" resultType="com.qams.app.bean.Question">
+    select q.title as 'name',count(a.qid) as 'value'  from question q left join answer a on q.qid=a.qid where a.qid is not null  group by q.title
+  </select>
+
+
+</mapper>

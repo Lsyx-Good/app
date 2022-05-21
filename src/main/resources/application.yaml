@@ -1,0 +1,16 @@
+server:
+    port: 80
+spring:
+    datasource:
+        url: jdbc:mariadb://192.168.254.128:3306/qms
+        username: root
+        password: 1234
+        driver-class-name: org.mariadb.jdbc.Driver
+        type: com.alibaba.druid.pool.DruidDataSource
+     
+mybatis:
+    mapper-locations: mapper/*.xml
+    
+logging:
+    level:
+        com.qams.app.dao: debug

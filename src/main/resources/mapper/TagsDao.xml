@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.TagsDao">
+
+  <select id="listPage" resultType="com.qams.app.bean.Tags">
+    select *  from tags 
+     <where>
+       <if test="tname!=null and tname != ''">
+        tname like '%${tname}%'
+       </if>
+     </where>
+    limit #{page}, #{size}
+  </select>
+  
+  <select id="count" resultType="java.lang.Integer">
+    select count(tid)  from tags 
+      <where>
+       <if test="tname!=null and tname != ''">
+        tname like '%${tname}%'
+      </if>
+     </where>
+  </select>
+  
+  <insert id="save">
+    insert into tags(tname, ctime) value (#{tname},#{ctime}) 
+  </insert> 
+    
+  
+  
+  <delete id="remove">
+    delete from tags where tid in 
+      <foreach item="item" index="index" collection="list"
+        open="(" separator="," close=")" >
+          #{item}
+      </foreach>  
+  </delete>
+
+  <update id="update">
+    update tags set tname=#{tname},mtime=#{mtime} 
+    where tid=#{tid}
+  </update>
+
+  <select id="list" resultType="com.qams.app.bean.Tags">
+    select *  from tags 
+  </select>
+
+  <select id="countTimesTags" resultType="com.qams.app.bean.Tags">
+      select t.tname as 'name', count(q.tid) as 'value' from tags t 
+      left join question q on t.tid=q.tid  group by t.tname
+  </select>
+
+</mapper>

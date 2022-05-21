@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/jeasyui/jquery.min.js"></script>
+    <script src="/jeasyui/echarts.min.js"></script>
+    <script>
+        $(function () {
+
+            let myChart = echarts.init(document.getElementById('main'));
+            let myChart1 = echarts.init(document.getElementById('main1'));
+
+            $.post('/logs/counTimes', function (data) {
+                // 指定图表的配置项和数据
+                let option = {
+                    title: {
+                        text: '系统访问数据分析图'
+                    },
+                    tooltip: {},
+                    legend: {
+                        data: ['登录次数统计']
+                    },
+                    xAxis: {
+                        data: date.names
+                    },
+                    yAxis: {},
+                    series: [
+                        {
+                            name: '登录次数',
+                            type: 'bar',
+                            data: date.times
+                        }
+                    ]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            })
+            $.post('/tags/countTimesTags', function (data) {
+                // 指定图表的配置项和数据
+                let option = {
+                    tooltip: {
+                        trigger: 'item'
+                    },
+                    legend: {
+                        top: '5%',
+                        left: 'center'
+                    },
+                    series: [
+                        {
+                            name: '类别下问题数',
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                show: false,
+                                position: 'center'
+                            },
+                            emphasis: {
+                                label: {
+                                    show: true,
+                                    fontSize: '40',
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            labelLine: {
+                                show: false
+                            },
+                            data: data
+                        }
+                    ]
+                };
+                // 使用刚指定的配置项和数据显示图表。
+                myChart1.setOption(option);
+            })
+        })
+    </script>
+</head>
+
+<body>
+    <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+
+</body>
+
+</html>
