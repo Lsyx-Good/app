@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.RolesDao">
+
+  <resultMap id="roleMapper" type="com.qams.app.bean.Roles">
+    <id property="rid" column="RID" />
+    <result property="rname" column="rname" />
+    <result property="rdesc" column="rdesc" />
+    <collection property="permissionsList" ofType="com.qams.app.bean.Permissions">
+      <id property="pid" column="pid" />
+      <result property="pname" column="pname" />
+      <result property="pdesc" column="pdesc" />
+    </collection>
+  </resultMap>
+
+  <select id="list" resultType="com.qams.app.bean.Roles">
+    select * from roles
+  </select>
+
+  <insert id="save">
+    insert into tb_user_role(uid,rid) value (#{uid},#{rid})
+  </insert>
+
+  <select id="listPage" resultMap="roleMapper">
+    <include refid="commsql" />
+    limit #{page},#{rows}
+  </select>
+  
+  <select id="count" resultType="java.lang.Integer">
+   select count(rid) from roles
+  </select>
+
+  
+  <sql id="commsql">
+    SELECT * from roles   r
+    LEFT JOIN tb_role_per pr ON r.rid = pr.rid
+    LEFT JOIN permissions p ON pr.pid = p.pid
+  </sql>
+
+  <select id="get" resultMap="roleMapper">
+    <include refid="commsql" />
+    where r.rid = #{rid}
+  </select>
+</mapper>

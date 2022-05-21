@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.CommentDao">
+  <!-- save --> 
+  <insert id="save">
+    insert into comment (uid,content,aid,ctime) value (#{uid},#{content},#{aid},now())
+  </insert>
+
+  <update id="remove">
+    update comment set del=1 where cid=#{cid}
+  </update>
+
+  <!-- count --> 
+  <select id="count" resultType="java.lang.Integer">
+    select count(c.cid) from comment c left join answer a on c.aid=a.aid
+    left join users u on c.uid=u.uid
+    <where>
+      <if test="ctime!=null and ctime!=''">
+        c.ctime like '%${ctime}%'
+      </if>
+      and c.del=0
+    </where>
+  </select>
+
+  <!-- list --> 
+  <select id="list" resultType="com.qams.app.bean.Comment">
+    select c.cid,c.content, c.ctime, u.uname, a.content as reply 
+    from comment c 
+    left join answer a on c.aid=a.aid
+    left join users u on c.uid=u.uid
+    <where>
+      <if test="ctime!=null and ctime!=''">
+        c.ctime like '%${ctime}%'
+      </if>
+      and c.del=0
+    </where>
+    limit #{page},#{rows}
+  </select>
+
+</mapper>

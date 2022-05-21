@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qams.app.dao.PermissionsDao">
+    
+    <select id="list" resultType="com.qams.app.bean.Permissions">
+      select * from permissions 
+    </select>
+
+    <insert id="save">
+        insert into tb_role_per(pid,rid) value (#{pid},#{rid})
+    </insert>
+
+    <delete id="remove">
+      delete from tb_role_per where rid = #{rid}
+    </delete>
+
+</mapper>
